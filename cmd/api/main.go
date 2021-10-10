@@ -38,14 +38,12 @@ func main() {
 
 	// TODO Read about servermux godoc
 	// https://eli.thegreenplace.net/2021/rest-servers-in-go-part-1-standard-library/
-	mux := http.NewServeMux()
-	mux.HandleFunc("/v1/healthcheck", app.healthcheckHandler)
 
 	// TODO Read up on http.Server
 	//https://pkg.go.dev/net/http
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.port),
-		Handler:      mux,
+		Handler:      app.routes(),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
