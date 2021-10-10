@@ -4,9 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"time"
 	"net/http"
 	"os"
+	"time"
 )
 
 // will be generated automatically at build time.
@@ -19,7 +19,7 @@ type config struct {
 
 type application struct {
 	config config
-	logger  *log.Logger
+	logger *log.Logger
 }
 
 func main() {

@@ -6,8 +6,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-
-func (app *application) routes() *httprouter.Router{
+func (app *application) routes() *httprouter.Router {
 
 	//more router options
 	//https://pkg.go.dev/github.com/julienschmidt/httprouter#Router
@@ -19,5 +18,3 @@ func (app *application) routes() *httprouter.Router{
 
 	return router
 }
-
-
