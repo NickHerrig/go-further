@@ -8,6 +8,9 @@ import (
 
 
 func (app *application) routes() *httprouter.Router{
+
+	//more router options
+	//https://pkg.go.dev/github.com/julienschmidt/httprouter#Router
 	router := httprouter.New()
 
 	router.HandlerFunc(http.MethodGet, "/v1/healthcheck", app.healthcheckHandler)
