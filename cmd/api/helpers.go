@@ -9,11 +9,15 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (app *application) writeJSON(w http.ResponseWriter, status int, data interface{}, headers http.Header) error {
+type envelope map[string]interface{}
 
-	js, err := json.Marshal(data)
-	if err != nil{
-	        return err
+func (app *application) writeJSON(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
+
+	// json.MarshIndent performs 65% slower and uses 30% more memory than json.Marshal()
+	// Improved readability is worth it in my opinion
+	js, err := json.MarshalIndent(data, "", "\t")
+	if err != nil {
+		return err
 	}
 
 	js = append(js, '\n')
