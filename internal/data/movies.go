@@ -10,7 +10,7 @@ type Movie struct {
 	CreatedAt time.Time `json:"-"` // - directive ommits field from json
 	Title     string    `json:"title"`
 	Year      int32     `json:"year,omitempty"`
-	Runtime   int32     `json:"runtime,omitempty"`
+	Runtime   Runtime   `json:"runtime,omitempty"` //using MarshalJSON method under-the-hood
 	Genres    []string  `json:"genres,omitempty"`
 	Version   int32     `json:"version"`
 }

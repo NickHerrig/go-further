@@ -14,6 +14,6 @@ building the let's go futher by alex edwards open movie database api
 # Interesting Learnings
 
 ## JSON Responses
-- json.Marshal()
-- struct tagging for json
-- Enveloping json responses
+- json.MarshalIndent() (Slower and more memory, but might be worth it for readability)
+- struct tagging for json ('-', and  omitempty)
+- Enveloping json responses (using  map[string]interface{})
