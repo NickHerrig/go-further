@@ -17,3 +17,4 @@ building the let's go futher by alex edwards open movie database api
 - json.MarshalIndent() (Slower and more memory, but might be worth it for readability)
 - struct tagging for json ('-', and  omitempty)
 - Enveloping json responses (using  map[string]interface{})
+- Error handling - http has consts for common http [methods](https://pkg.go.dev/net/http#pkg-constants) 
