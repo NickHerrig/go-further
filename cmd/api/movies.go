@@ -4,22 +4,21 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-	"encoding/json"
 
 	"greenlight.nickherrig.com/internal/data"
 )
 
 func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		Title   string `json:"title"`
-		Year    int32 `json:"year"`
-		Runtime int32 `json:"runtime"`
+		Title   string   `json:"title"`
+		Year    int32    `json:"year"`
+		Runtime int32    `json:"runtime"`
 		Genres  []string `json:"genres"`
 	}
 
-	err := json.NewDecoder(r.Body).Decode(&input)
-	if err != nil{
-		app.errorResponse(w, r, http.StatusBadRequest, err.Error())
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
 		return
 	}
 
