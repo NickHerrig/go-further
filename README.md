@@ -18,8 +18,10 @@ building the let's go futher by alex edwards open movie database api
 - struct tagging for json ('-', and  omitempty)
 - Enveloping json responses (using  map[string]interface{})
 - Error handling - http has consts for common http [methods](https://pkg.go.dev/net/http#pkg-constants) 
+- Custom JSON Encoding implementing the MarshalJSON interface
 
 ## Parsing JSON Requests
 - Any json k/v pairs which can't be ampped to struct fields will be silently ignored
 - json.Unmarshal vs json.Decoder (Unmarshal uses 80% more memory and is a tiny bit slower)
 - MaxBytesReader is important for malicous or accidently DDOS requests.
+- Custom JSON Decoding implementing the UnmarshalJSON interface
