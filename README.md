@@ -22,3 +22,4 @@ building the let's go futher by alex edwards open movie database api
 ## Parsing JSON Requests
 - Any json k/v pairs which can't be ampped to struct fields will be silently ignored
 - json.Unmarshal vs json.Decoder (Unmarshal uses 80% more memory and is a tiny bit slower)
+- MaxBytesReader is important for malicous or accidently DDOS requests.
