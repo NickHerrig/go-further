@@ -1,17 +1,17 @@
 package data
 
-
 import (
+	"errors"
 	"fmt"
 	"strconv"
-	"errors"
 	"strings"
 )
 
 var ErrInvalidRuntimeFormat = errors.New("invalid runtime format")
+
 type Runtime int32
 
-func (r Runtime) MarshalJSON() ([]byte, error){
+func (r Runtime) MarshalJSON() ([]byte, error) {
 
 	js := fmt.Sprintf("%d mins", r)
 	quotedjs := strconv.Quote(js)
@@ -20,14 +20,14 @@ func (r Runtime) MarshalJSON() ([]byte, error){
 
 }
 
-func (r *Runtime) UnmarshalJSON(jsonValue []byte) error{
+func (r *Runtime) UnmarshalJSON(jsonValue []byte) error {
 	unquotedJSONValue, err := strconv.Unquote(string(jsonValue))
 	if err != nil {
 		return ErrInvalidRuntimeFormat
 	}
 
 	parts := strings.Split(unquotedJSONValue, " ")
-	if len(parts) !=2 || parts[1] != "mins" {
+	if len(parts) != 2 || parts[1] != "mins" {
 		return ErrInvalidRuntimeFormat
 	}
 

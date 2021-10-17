@@ -3,10 +3,10 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"net/http"
-	"strconv"
 	"fmt"
 	"io"
+	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
@@ -30,7 +30,7 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data envelo
 		w.Header()[key] = value
 	}
 
-	w.Header().Set("Content-Type", "applicatoin/json")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	w.Write(js)
 
@@ -47,7 +47,6 @@ func (app *application) readIDParam(r *http.Request) (int64, error) {
 
 	return id, nil
 }
-
 
 func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst interface{}) error {
 	maxBytes := 1_048_576
@@ -67,7 +66,7 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst int
 		case errors.Is(err, io.ErrUnexpectedEOF):
 			return errors.New("body contains badly-formed JSON")
 		case errors.As(err, &unmarshalTypeError):
-			if unmarshalTypeError.Field != ""{
+			if unmarshalTypeError.Field != "" {
 				return fmt.Errorf("body contains incorrect JSON type for field %q", unmarshalTypeError.Field)
 			}
 			return fmt.Errorf("body contains incorrect JSON type (at character %d)", unmarshalTypeError.Offset)
@@ -87,7 +86,7 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst int
 	}
 
 	err = dec.Decode(&struct{}{})
-	if err != io.EOF{
+	if err != io.EOF {
 		return errors.New("body must only contain a single JSON value")
 	}
 
