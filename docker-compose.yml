@@ -6,12 +6,8 @@ services:
     restart: always
     ports:
       - 5432:5432
+    volumes:
+      - "./pg-data:/var/lib/postgresql/data"
     environment:
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
-
