@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"flag"
 	"fmt"
 	"log"
@@ -10,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	_ "github.com/lib/pq"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 // will be generated automatically at build time.
@@ -72,16 +71,17 @@ func main() {
 	logger.Fatal(err)
 }
 
-func openDB(cfg config) (*sql.DB, error) {
-	db, err := sql.Open("postgres", cfg.db.dsn)
+func openDB(cfg config) (*pgxpool.Pool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	//https://github.com/jackc/pgx/wiki/Getting-started-with-pgx#using-a-connection-pool
+	db, err := pgxpool.Connect(ctx, cfg.db.dsn)
 	if err != nil {
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	err = db.PingContext(ctx)
+	err = db.Ping(ctx)
 	if err != nil {
 		return nil, err
 	}
