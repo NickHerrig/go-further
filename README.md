@@ -28,4 +28,7 @@ building the let's go futher by alex edwards open movie database api
 - Validation of incoming JSON requests is pretty dang important.
 
 ## Database Setup and Config
+pgx: https://github.com/jackc/pgx/blob/master/pgxpool/pool.go#L16
+- MaxOpenConns, MaxIdleConns, ConnMaxLifetime, ConnMaxIdleTime.
+- Explicitly set MaxOpenConns value below hardlimits set by the database(postgres=100).
 
