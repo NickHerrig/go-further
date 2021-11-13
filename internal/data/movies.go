@@ -53,7 +53,39 @@ func (m MovieStorage) Insert(movie *Movie) error {
 }
 
 func (m MovieStorage) Get(id int64) (*Movie, error) {
-	return nil, nil
+	if id < 1 {
+		return nil, ErrRecordNotFound
+	}
+
+	query := `
+		SELECT id, created_at, title, year, runtime, genres, version
+		FROM movies
+		WHERE id = $1`
+
+	var movie Movie
+
+	err := m.DB.QueryRow(context.Background(), query, id).Scan(
+		&movie.ID,
+		&movie.CreatedAt,
+		&movie.Title,
+		&movie.Year,
+		&movie.Runtime,
+		&movie.Genres,
+		&movie.Version,
+	)
+	// more information here about specific errors
+	//https://github.com/jackc/pgx/issues/474#issuecomment-657538224
+	if err != nil {
+		switch {
+		case err.Error() == "no rows in result set":
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &movie, nil
+
 }
 
 func (m MovieStorage) Update(movie *Movie) error {
