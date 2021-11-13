@@ -32,3 +32,27 @@ pgx: https://github.com/jackc/pgx/blob/master/pgxpool/pool.go#L16
 - MaxOpenConns, MaxIdleConns, ConnMaxLifetime, ConnMaxIdleTime.
 - Explicitly set MaxOpenConns value below hardlimits set by the database(postgres=100).
 
+## SQL Migrations 
+Example Migrations:
+`migrate create -seq -ext=.sql -dir=./migrations add_movies_check_constraints`
+- `-seq` uses sequential numbering instead of default unix time
+- `-ext` uses the .sql extension
+- `-dir` places up and down files in the migrations folder
+
+applying migrations:
+`migrate -path=./migrations -database=DB_DSN up`
+
+check migration version:
+`migrate -path=./migrations -database=DB_DSN version`
+
+migrate up or down specific versions:
+`migrate -path=./migrations -database=$DB_DSN goto 1`
+
+migrate down a specific number of migraations:
+`migrate -path=./migrations -database=$DB_DSN down 1`
+
+Fixing SQL Errors:
+if an error happens, you must manually roll-back th partially applied migration.
+Once completed, you must force the version number..
+`migrate -path=./migrations -database=$DB_DSN force {version}`
+
