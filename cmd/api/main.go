@@ -9,6 +9,8 @@ import (
 	"os"
 	"time"
 
+	"greenlight.nickherrig.com/internal/data"
+
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
@@ -27,8 +29,9 @@ type config struct {
 }
 
 type application struct {
-	config config
-	logger *log.Logger
+	config  config
+	logger  *log.Logger
+	storage data.Storage
 }
 
 func main() {
@@ -56,8 +59,9 @@ func main() {
 	logger.Printf("database connection pool established")
 
 	app := &application{
-		config: cfg,
-		logger: logger,
+		config:  cfg,
+		logger:  logger,
+		storage: data.NewStorage(db),
 	}
 
 	// TODO Read about servermux godoc

@@ -56,3 +56,5 @@ if an error happens, you must manually roll-back th partially applied migration.
 Once completed, you must force the version number..
 `migrate -path=./migrations -database=$DB_DSN force {version}`
 
+## CRUD Operations
+Movie Storage: revisit wether or not to mock this with an interface.
