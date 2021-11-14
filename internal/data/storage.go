@@ -7,7 +7,8 @@ import (
 )
 
 var (
-	ErrRecordNotFound = errors.New("Woops, we coudn't find that record.")
+	ErrRecordNotFound = errors.New("Woops, we coudn't find that record")
+	ErrEditConflict   = errors.New("Woops, there are an edit conlfict")
 )
 
 type Storage struct {

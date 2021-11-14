@@ -2,8 +2,10 @@ package data
 
 import (
 	"context"
+	"errors"
 	"time"
 
+	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"greenlight.nickherrig.com/internal/validator"
 )
@@ -77,7 +79,7 @@ func (m MovieStorage) Get(id int64) (*Movie, error) {
 	//https://github.com/jackc/pgx/issues/474#issuecomment-657538224
 	if err != nil {
 		switch {
-		case err.Error() == "no rows in result set":
+		case errors.Is(err, pgx.ErrNoRows):
 			return nil, ErrRecordNotFound
 		default:
 			return nil, err
@@ -93,7 +95,7 @@ func (m MovieStorage) Update(movie *Movie) error {
 	query := `
 		UPDATE movies
         	SET title = $1, year = $2, runtime = $3, genres = $4, version = version + 1 
-		WHERE id = $5
+		WHERE id = $5 AND version = $6
         	RETURNING version`
 
 	args := []interface{}{
@@ -102,9 +104,20 @@ func (m MovieStorage) Update(movie *Movie) error {
 		movie.Runtime,
 		movie.Genres,
 		movie.ID,
+		movie.Version,
 	}
 
-	return m.DB.QueryRow(context.Background(), query, args...).Scan(&movie.Version)
+	err := m.DB.QueryRow(context.Background(), query, args...).Scan(&movie.Version)
+	if err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return ErrEditConflict
+		default:
+			return err
+		}
+	}
+
+	return nil
 
 }
 
