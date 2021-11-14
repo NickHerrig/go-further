@@ -57,4 +57,12 @@ Once completed, you must force the version number..
 `migrate -path=./migrations -database=$DB_DSN force {version}`
 
 ## CRUD Operations
-Movie Storage: revisit wether or not to mock this with an interface.
+Create, Read, Update, Delete ops were discussed in this chapter. 
+This chapter was fairly straightforward. 
+There are a few differences with utilizing pgxpool.{DB-Command}()
+rather than utilizing the /lib/pg and database/sql packages.
+
+## Advanced CRUD Ops
+Partial updates with Patch can be accomplished by utilizing pointers on structs to 
+test the difference between nil and the go type zero-value.
+JSON items with null values will be ignored and will remain unchanged.
