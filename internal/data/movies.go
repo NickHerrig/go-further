@@ -89,7 +89,23 @@ func (m MovieStorage) Get(id int64) (*Movie, error) {
 }
 
 func (m MovieStorage) Update(movie *Movie) error {
-	return nil
+
+	query := `
+		UPDATE movies
+        	SET title = $1, year = $2, runtime = $3, genres = $4, version = version + 1 
+		WHERE id = $5
+        	RETURNING version`
+
+	args := []interface{}{
+		movie.Title,
+		movie.Year,
+		movie.Runtime,
+		movie.Genres,
+		movie.ID,
+	}
+
+	return m.DB.QueryRow(context.Background(), query, args...).Scan(&movie.Version)
+
 }
 
 func (m MovieStorage) Delete(id int64) error {
