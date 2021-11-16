@@ -66,3 +66,9 @@ rather than utilizing the /lib/pg and database/sql packages.
 Partial updates with Patch can be accomplished by utilizing pointers on structs to 
 test the difference between nil and the go type zero-value.
 JSON items with null values will be ignored and will remain unchanged.
+It's important to think through potential race conditions on endpoints that update
+values in the database. return conflicts when caught.
+
+## Filtering, Sorting, and Pagination
+- [r.URL.Query()](https://pkg.go.dev/net/url#URL.Query) returns a map of query params
+
