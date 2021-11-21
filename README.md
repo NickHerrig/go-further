@@ -71,4 +71,6 @@ values in the database. return conflicts when caught.
 
 ## Filtering, Sorting, and Pagination
 - [r.URL.Query()](https://pkg.go.dev/net/url#URL.Query) returns a map of query params
+- Full Text Search is used to search columns for specific text.
+- Indexing for query performance.
 
