@@ -13,6 +13,14 @@ type Filters struct {
 	SortSafelist []string
 }
 
+func (f Filters) limit() int {
+	return f.PageSize
+}
+
+func (f Filters) offset() int {
+	return (f.Page - 1) * f.PageSize
+}
+
 func (f Filters) sortColumn() string {
 	for _, safeValue := range f.SortSafelist {
 		if f.Sort == safeValue {
@@ -35,7 +43,7 @@ func ValidateFilters(v *validator.Validator, f Filters) {
 	v.Check(f.Page <= 10_000_000, "page", "must be less than 10 million")
 
 	v.Check(f.PageSize > 0, "page_size", "must be greater than zero")
-	v.Check(f.PageSize <= 100, "page", "must be less than one hundred")
+	v.Check(f.PageSize <= 100, "page_size", "must be less than one hundred")
 
 	v.Check(validator.In(f.Sort, f.SortSafelist...), "sort", "invalid sort value")
 
