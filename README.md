@@ -73,4 +73,7 @@ values in the database. return conflicts when caught.
 - [r.URL.Query()](https://pkg.go.dev/net/url#URL.Query) returns a map of query params
 - Full Text Search is used to search columns for specific text.
 - Indexing for query performance.
+- `ORDER BY` help with sorting of records. 
+- `LIMIT` and `OFFSET` help with pagination of records.
+- `count(*) OVER()` expression results in the filtered record count being included as the first value in each row.
 
