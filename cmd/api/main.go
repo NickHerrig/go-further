@@ -27,6 +27,11 @@ type config struct {
 		minConns    int
 		maxIdleTime string
 	}
+	limiter struct {
+		rps     float64
+		burst   int
+		enabled bool
+	}
 }
 
 type application struct {
@@ -46,6 +51,10 @@ func main() {
 	flag.IntVar(&cfg.db.maxConns, "db-max-conns", 50, "PostgreSQL max connections")
 	flag.IntVar(&cfg.db.minConns, "db-min-conns", 25, "PostgreSQL min connections")
 	flag.StringVar(&cfg.db.maxIdleTime, "db-max-idle-time", "15m", "PostgreSQL max idle connection time")
+
+	flag.Float64Var(&cfg.limiter.rps, "limiter-rps", 2, "rate limiter requests per second")
+	flag.IntVar(&cfg.limiter.burst, "limiter-burst", 4, "rate limiter bursts")
+	flag.BoolVar(&cfg.limiter.enabled, "limiter-enabled", true, "rate limiter enabled")
 
 	flag.Parse()
 
