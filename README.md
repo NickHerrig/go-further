@@ -80,6 +80,7 @@ values in the database. return conflicts when caught.
 ## Rate Limiting
 
 - Common middleware structure
+
 ```go
 func (app *application) exampleMiddleware(next http.Handler) http.Handler {
     // Any code here will run only once, when we wrap something with the middleware. 
@@ -88,5 +89,7 @@ func (app *application) exampleMiddleware(next http.Handler) http.Handler {
         next.ServeHTTP(w, r) 
     })
 }
-```
+```	
+- rate limiting with package: golang.org/x/time/rate
+- this implementation would not work for an HA setup.
 
