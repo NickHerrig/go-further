@@ -93,3 +93,7 @@ func (app *application) exampleMiddleware(next http.Handler) http.Handler {
 - rate limiting with package: golang.org/x/time/rate
 - this implementation would not work for an HA setup.
 
+## Signals
+- greping for processes `pgrep -l {pattern}`
+- send a kill signal `pkill -SIGKILL {process}`
+- send a TERM signal `pkill -SIGTERM {process}`
