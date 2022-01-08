@@ -13,10 +13,12 @@ var (
 
 type Storage struct {
 	Movies MovieStorage
+	Users  UserStorage
 }
 
 func NewStorage(db *pgxpool.Pool) Storage {
 	return Storage{
 		Movies: MovieStorage{DB: db},
+		Users:  UserStorage{DB: db},
 	}
 }

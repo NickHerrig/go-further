@@ -1,11 +1,20 @@
 package data
 
 import (
+	"context"
 	"errors"
 	"time"
 
+	"github.com/jackc/pgconn"
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"golang.org/x/crypto/bcrypt"
 	"greenlight.nickherrig.com/internal/validator"
+)
+
+var (
+	ErrDuplicateEmail = errors.New("duplicate email")
 )
 
 type User struct {
@@ -21,6 +30,10 @@ type User struct {
 type password struct {
 	plaintext *string
 	hash      []byte
+}
+
+type UserStorage struct {
+	DB *pgxpool.Pool
 }
 
 func (p *password) Set(plaintextPassword string) error {
@@ -75,4 +88,113 @@ func ValidateUser(v *validator.Validator, user *User) {
 	if user.Password.hash == nil {
 		panic("missing hash for user password")
 	}
+}
+
+func (s UserStorage) Insert(user *User) error {
+	query := `
+		INSERT into users (name, email, password_hash, activated)
+		VALUES ($1, $2, $3, $4)
+		RETURNING id, created_at, version`
+
+	args := []interface{}{user.Name, user.Email, user.Password.hash, user.Activated}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	err := s.DB.QueryRow(ctx, query, args...).Scan(&user.ID, &user.CreatedAt, &user.Version)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch {
+			case pgErr.Code == pgerrcode.UniqueViolation:
+				return ErrDuplicateEmail
+			default:
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (s UserStorage) GetByEmail(email string) (*User, error) {
+
+	query := `
+		SELECT id, created_at, name, email, password_hash, activated, version
+		FROM users
+		WHERE email = $1
+		`
+	var user User
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	err := s.DB.QueryRow(ctx, query, email).Scan(
+		&user.ID,
+		&user.CreatedAt,
+		&user.Name,
+		&user.Email,
+		&user.Password,
+		&user.Activated,
+		&user.Version,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &user, nil
+}
+
+func (s UserStorage) Update(user *User) error {
+
+	query := `
+		UPDATE users
+		SET name = $1, email = $2, password_hash = $3, activated = $4, version = version + 1
+		WHERE id = $5 AND version = $6
+		RETURNING version
+		`
+
+	args := []interface{}{
+		user.Name,
+		user.Email,
+		user.Password.hash,
+		user.Activated,
+		user.ID,
+		user.Version,
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	err := s.DB.QueryRow(ctx, query, args...).Scan(
+		&user.ID,
+		&user.CreatedAt,
+		&user.Name,
+		&user.Email,
+		&user.Password,
+		&user.Activated,
+		&user.Version,
+	)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrEditConflict
+		}
+
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			if pgErr.Code == pgerrcode.UniqueViolation {
+				return ErrDuplicateEmail
+			}
+		}
+
+		return err
+	}
+
+	return nil
 }
