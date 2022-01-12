@@ -8,6 +8,7 @@ import (
 
 	"greenlight.nickherrig.com/internal/data"
 	"greenlight.nickherrig.com/internal/jsonlog"
+	"greenlight.nickherrig.com/internal/mailer"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 )
@@ -29,12 +30,20 @@ type config struct {
 		burst   int
 		enabled bool
 	}
+	smtp struct {
+		host     string
+		port     int
+		username string
+		password string
+		sender   string
+	}
 }
 
 type application struct {
 	config  config
 	logger  *jsonlog.Logger
 	storage data.Storage
+	mailer  mailer.Mailer
 }
 
 func main() {
@@ -53,6 +62,12 @@ func main() {
 	flag.IntVar(&cfg.limiter.burst, "limiter-burst", 4, "rate limiter bursts")
 	flag.BoolVar(&cfg.limiter.enabled, "limiter-enabled", true, "rate limiter enabled")
 
+	flag.StringVar(&cfg.smtp.host, "smtp-host", "smtp.mailtrap.io", "SMTP host")
+	flag.IntVar(&cfg.smtp.port, "smtp-port", 25, "SMTP port")
+	flag.StringVar(&cfg.smtp.username, "smtp-username", "supersecret", "SMTP username")
+	flag.StringVar(&cfg.smtp.password, "smtp-password", "supersecret", "SMTP password")
+	flag.StringVar(&cfg.smtp.sender, "smtp-sender", "Greenlight <no-reply@greenlight.nickherrig.com>", "SMTP sender")
+
 	flag.Parse()
 
 	logger := jsonlog.New(os.Stdout, jsonlog.LevelInfo)
@@ -65,10 +80,16 @@ func main() {
 	defer db.Close()
 	logger.PrintInfo("database connection pool established", nil)
 
+	m, err := mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender)
+	if err != nil {
+		logger.PrintFatal(err, nil)
+	}
+
 	app := &application{
 		config:  cfg,
 		logger:  logger,
 		storage: data.NewStorage(db),
+		mailer:  m,
 	}
 
 	err = app.serve()
