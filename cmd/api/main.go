@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"os"
+	"sync"
 	"time"
 
 	"greenlight.nickherrig.com/internal/data"
@@ -44,6 +45,7 @@ type application struct {
 	logger  *jsonlog.Logger
 	storage data.Storage
 	mailer  mailer.Mailer
+	wg      sync.WaitGroup
 }
 
 func main() {
